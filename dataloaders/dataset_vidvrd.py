@@ -357,22 +357,6 @@ class VidVRDUnifiedDataset(object):
             self.gt_traj_track_dir = gt_training_traj_supp["traj_dir"]
             self.gt_vit_feat_path = gt_training_traj_supp["vit_feat_dir"]
             self.merge_gt_traj()
-        
-        if self.dataset_splits == ("train",):
-
-            segment_tags = self.filter_segments() 
-            del_seg_tags = [seg_tag for seg_tag in segment_tags if self.det_traj_infos[seg_tag]['vit_feats'].size(0) <= 1]
-
-            gt_vid_ap = pickle.load(open('train_gt_video_level_results_v1.pkl', 'rb'))['video_ap']
-            filter_vid_tags = [k for k in gt_vid_ap if gt_vid_ap[k] < 0.3]
-            seg_tag_map = json.load(open('seg_tag_map.json', 'r'))
-            filter_list = [] 
-            for k in filter_vid_tags:
-                filter_list += seg_tag_map[k]
-            segment_tags = sorted(list(set(segment_tags) - set(del_seg_tags)))
-            segment_tags = sorted(list(set(segment_tags) - set(filter_list)))
-            self.segment_tags = segment_tags 
-            print("Delet segments with only on traj. {} segments left".format(len(self.segment_tags)))
 
         self.tag = 'wo_Bg_with_GT'
         if self.assign_label:
